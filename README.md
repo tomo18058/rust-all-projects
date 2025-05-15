@@ -3,6 +3,8 @@
 このリポジトリはRustで作成した複数のプロジェクトをまとめたものです。
 
 ## 各プロジェクト概要
+- **guessing_game**  
+  Rustで数当てゲームの作成。
 
 - **hello_rust**  
   Rustの基本的な「Hello, World!」プログラム。

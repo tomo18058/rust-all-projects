@@ -2,6 +2,9 @@ use std::time::Instant;
 use quanta::Clock;
 
 fn main() {
+    //unused_mut = 使われてないmut
+    // unnecessary_mut = 無駄なmut（ツールによっては同義）
+    #[allow(unused_mut)]
     let mut clock = Clock::new();
     const N:u32 = 1_000_000;
 
@@ -21,3 +24,4 @@ fn main() {
     }
     println!("quanta::clock::now() overhead = {:?}",stop.duration_since(start));
 }
+//unknown lint:`unnecessary_mut `

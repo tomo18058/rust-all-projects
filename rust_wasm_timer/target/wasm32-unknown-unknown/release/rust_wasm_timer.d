@@ -1,0 +1,1 @@
+C:\Users\2230102\Documents\Rust\rust-all-projects\rust_wasm_timer\target\wasm32-unknown-unknown\release\rust_wasm_timer.wasm: C:\Users\2230102\Documents\Rust\rust-all-projects\rust_wasm_timer\src\lib.rs

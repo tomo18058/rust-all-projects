@@ -17,7 +17,7 @@ pub fn stop_measurement(){
 
 // Rustから呼べる関数をエクスポート
 #[wasm_bindgen]
-pub fn measure_now_overhead(iterations: u32) -> f64 {
+pub fn measure_now_overhead(iterations: u64) -> f64 {
     SHOULD_STOP.store(false, Ordering::Relaxed);  // 開始前にリセット
 
     let start = now();// 最初の時刻を記録

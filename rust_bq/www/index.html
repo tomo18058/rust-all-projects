@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ソート計測（Rust + WASM）</title>
+
+<!-- ✅ スタイリング：暗めのテーマ＆水色ボタン -->
+<style>
+    body {
+        background: #121212;
+        color: #eee;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        margin-bottom: 25px;
+        color: #00bcd4;
+    }
+
+    button {
+        display: block;
+        margin: 0 auto 30px auto;
+        background: #00bcd4;
+        color: #121212;
+        font-size: 18px;
+        padding: 12px 36px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        box-shadow: 0 4px 12px #00bcd4aa;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    button:hover {
+        background: #0097a7;
+        box-shadow: 0 6px 20px #0097a7cc;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.8);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 14px 20px;
+        border-bottom: 1px solid #222;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    th {
+        background: #00bcd4;
+        color: #121212;
+        font-weight: 700;
+        text-align: center;
+        letter-spacing: 0.05em;
+    }
+
+    tr:nth-child(even) td {
+        background: #1e1e1e;
+    }
+
+    tr:nth-child(odd) td {
+        background: #292929;
+    }
+
+    .loading {
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 18px;
+        text-align: center;
+        color: #00bcd4;
+    }
+
+    .dots {
+        color: #00bcd4;
+        font-weight: 900;
+        font-size: 20px;
+        letter-spacing: 3px;
+    }
+
+    #summary {
+        margin-top: 25px;
+        font-size: 17px;
+        line-height: 1.6;
+        font-weight: 600;
+        color: #00bcd4;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<h1>ソート計測（Rust + WASM）</h1>
+
+<!-- ✅ ボタン：クリックで run_sort_once が呼ばれる -->
+<button id="start-btn">計測開始</button>
+
+<!-- ✅ ローディング表示 -->
+<div class="loading">
+    <span>計測中</span><span class="dots"></span>
+</div>
+
+<!-- ✅ 結果テーブル -->
+<table id="results-table">
+    <tr><th>#</th><th>バブルソート (ms)</th><th>クイックソート (ms)</th></tr>
+</table>
+
+<!-- ✅ 合計と平均のサマリ -->
+<div id="summary">
+    <div id="total-bubble"></div>
+    <div id="avg-bubble"></div>
+    <div id="total-quick"></div>
+    <div id="avg-quick"></div>
+</div>
+
+<!-- ✅ RustでビルドしたWASMモジュールを読み込むJS -->
+<script type="module">
+    import init, { run_sort_once } from "../pkg/rust_bq.js";
+
+    async function main() {
+        await init();
+
+        const resultsTable = document.getElementById("results-table");
+        const totalBubble = document.getElementById("total-bubble");
+        const avgBubble = document.getElementById("avg-bubble");
+        const totalQuick = document.getElementById("total-quick");
+        const avgQuick = document.getElementById("avg-quick");
+        const loadingText = document.querySelector(".loading span:first-child");
+        const dots = document.querySelector(".dots");
+
+        document.getElementById("start-btn").onclick = async () => {
+        const runs = 10000;
+        const dataSize = 5000;
+        let bubbleTotal = 0;
+        let quickTotal = 0;
+
+        resultsTable.innerHTML = '<tr><th>#</th><th>バブルソート (ms)</th><th>クイックソート (ms)</th></tr>';
+        loadingText.textContent = "計測中";
+        let dotCount = 0;
+
+        const interval = setInterval(() => {
+            dotCount = (dotCount + 1) % 4;
+            dots.textContent = ".".repeat(dotCount);
+        }, 400);
+
+        for (let i = 0; i < runs; i++) {
+          const result = run_sort_once(dataSize); // Vec<f64> → [bubble, quick]
+            const bubble = result[0];
+            const quick = result[1];
+
+            bubbleTotal += bubble;
+            quickTotal += quick;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${i + 1}</td><td>${bubble.toFixed(3)}</td><td>${quick.toFixed(3)}</td>`;
+            resultsTable.appendChild(row);
+
+            loadingText.textContent = `計測中 (${i + 1} / ${runs})`;
+            await new Promise(r => setTimeout(r, 20));
+        }
+
+        clearInterval(interval);
+        dots.textContent = '';
+        loadingText.textContent = '完了！';
+
+        totalBubble.textContent = `バブルソート合計: ${bubbleTotal.toFixed(3)} ms`;
+        avgBubble.textContent = `バブルソート平均: ${(bubbleTotal / runs).toFixed(3)} ms`;
+        totalQuick.textContent = `クイックソート合計: ${quickTotal.toFixed(3)} ms`;
+        avgQuick.textContent = `クイックソート平均: ${(quickTotal / runs).toFixed(3)} ms`;
+        };
+    }
+
+    main();
+</script>
+
+</body>
+</html>

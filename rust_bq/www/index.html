@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ソート計測（Rust + WASM）</title>
 
-<!-- ✅ スタイリング：暗めのテーマ＆水色ボタン -->
+<!-- ✅ スタイリング：暗めのテーマ＆水色アクセント -->
 <style>
     body {
-        background: #121212;
+        background: #121212; /* 背景をダークに */
         color: #eee;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         max-width: 700px;
@@ -23,7 +23,7 @@
         font-weight: 700;
         letter-spacing: 1.5px;
         margin-bottom: 25px;
-        color: #00bcd4;
+        color: #00bcd4; /* アクセントカラー */
     }
 
     button {
@@ -58,7 +58,7 @@
         padding: 14px 20px;
         border-bottom: 1px solid #222;
         text-align: right;
-        font-variant-numeric: tabular-nums;
+        font-variant-numeric: tabular-nums; /* 数字を等幅に */
     }
 
     th {
@@ -106,20 +106,20 @@
 
 <h1>ソート計測（Rust + WASM）</h1>
 
-<!-- ✅ ボタン：クリックで run_sort_once が呼ばれる -->
+<!-- ✅ ユーザーが押して計測を始めるボタン -->
 <button id="start-btn">計測開始</button>
 
-<!-- ✅ ローディング表示 -->
+<!-- ✅ ローディング中の状態を表示 -->
 <div class="loading">
     <span>計測中</span><span class="dots"></span>
 </div>
 
-<!-- ✅ 結果テーブル -->
+<!-- ✅ ソート結果を表示するテーブル -->
 <table id="results-table">
     <tr><th>#</th><th>バブルソート (ms)</th><th>クイックソート (ms)</th></tr>
 </table>
 
-<!-- ✅ 合計と平均のサマリ -->
+<!-- ✅ ソート結果の集計（合計・平均）を表示 -->
 <div id="summary">
     <div id="total-bubble"></div>
     <div id="avg-bubble"></div>
@@ -127,13 +127,16 @@
     <div id="avg-quick"></div>
 </div>
 
-<!-- ✅ RustでビルドしたWASMモジュールを読み込むJS -->
+<!-- ✅ WASM（Rustでビルドしたモジュール）を読み込むJS -->
 <script type="module">
+    // RustのWASMモジュールと関数をインポート
     import init, { run_sort_once } from "../pkg/rust_bq.js";
 
     async function main() {
+        // Rustモジュールの初期化
         await init();
 
+        // DOM要素の取得
         const resultsTable = document.getElementById("results-table");
         const totalBubble = document.getElementById("total-bubble");
         const avgBubble = document.getElementById("avg-bubble");
@@ -142,48 +145,60 @@
         const loadingText = document.querySelector(".loading span:first-child");
         const dots = document.querySelector(".dots");
 
+        // 計測開始ボタンが押されたときの処理
         document.getElementById("start-btn").onclick = async () => {
-        const runs = 10000;
-        const dataSize = 5000;
-        let bubbleTotal = 0;
-        let quickTotal = 0;
+            const runs = 100000;     // 計測回数
+            const dataSize = 5000;  // ソート対象のデータ数
 
-        resultsTable.innerHTML = '<tr><th>#</th><th>バブルソート (ms)</th><th>クイックソート (ms)</th></tr>';
-        loadingText.textContent = "計測中";
-        let dotCount = 0;
+            let bubbleTotal = 0;
+            let quickTotal = 0;
 
-        const interval = setInterval(() => {
-            dotCount = (dotCount + 1) % 4;
-            dots.textContent = ".".repeat(dotCount);
-        }, 400);
+            // テーブル初期化
+            resultsTable.innerHTML = '<tr><th>#</th><th>バブルソート (ms)</th><th>クイックソート (ms)</th></tr>';
+            loadingText.textContent = "計測中";
 
-        for (let i = 0; i < runs; i++) {
-          const result = run_sort_once(dataSize); // Vec<f64> → [bubble, quick]
-            const bubble = result[0];
-            const quick = result[1];
+            // ローディングアニメーション（...）
+            let dotCount = 0;
+            const interval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                dots.textContent = ".".repeat(dotCount);
+            }, 400);
 
-            bubbleTotal += bubble;
-            quickTotal += quick;
+            // 10000回のループで計測実施
+            for (let i = 0; i < runs; i++) {
+                const result = run_sort_once(dataSize); // Rustの関数呼び出し：[バブル, クイック]
+                const bubble = result[0];
+                const quick = result[1];
 
-            const row = document.createElement("tr");
-            row.innerHTML = `<td>${i + 1}</td><td>${bubble.toFixed(3)}</td><td>${quick.toFixed(3)}</td>`;
-            resultsTable.appendChild(row);
+                bubbleTotal += bubble;
+                quickTotal += quick;
 
-            loadingText.textContent = `計測中 (${i + 1} / ${runs})`;
-            await new Promise(r => setTimeout(r, 20));
-        }
+                // 結果を1行ずつテーブルに追加
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${i + 1}</td><td>${bubble.toFixed(3)}</td><td>${quick.toFixed(3)}</td>`;
+                resultsTable.appendChild(row);
 
-        clearInterval(interval);
-        dots.textContent = '';
-        loadingText.textContent = '完了！';
+                // 進捗表示を更新
+                loadingText.textContent = `計測中 (${i + 1} / ${runs})`;
 
-        totalBubble.textContent = `バブルソート合計: ${bubbleTotal.toFixed(3)} ms`;
-        avgBubble.textContent = `バブルソート平均: ${(bubbleTotal / runs).toFixed(3)} ms`;
-        totalQuick.textContent = `クイックソート合計: ${quickTotal.toFixed(3)} ms`;
-        avgQuick.textContent = `クイックソート平均: ${(quickTotal / runs).toFixed(3)} ms`;
+                // UI描画のために少し待つ
+                await new Promise(r => setTimeout(r, 20));
+            }
+
+            // アニメーション停止
+            clearInterval(interval);
+            dots.textContent = '';
+            loadingText.textContent = '完了！';
+
+            // 集計結果の表示
+            totalBubble.textContent = `バブルソート合計: ${bubbleTotal.toFixed(3)} ms`;
+            avgBubble.textContent = `バブルソート平均: ${(bubbleTotal / runs).toFixed(3)} ms`;
+            totalQuick.textContent = `クイックソート合計: ${quickTotal.toFixed(3)} ms`;
+            avgQuick.textContent = `クイックソート平均: ${(quickTotal / runs).toFixed(3)} ms`;
         };
     }
 
+    // アプリ起動
     main();
 </script>
 

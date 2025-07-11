@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust vs JS クイズ</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>このコードはRust？JavaScript？</h1>
+        <pre id="code-block">println!("Hello,world!");</pre>
+
+        <div class="options">
+            <button onclick="checkAnswer('Rust')">Rust</button>
+            <button onclick="checkAnswer('JavaScript')">JavaScript</button>
+        </div>
+
+        <p id="result"></p>
+        <div class="status">
+            <span id="question-couunt">1問目</span>
+            <span id="score">正解数: 0</span>
+        </div>
+        <button id="next-button" onclick="loadNextQuestion()" style="display: none">次の問題へ</button>n
+    </div>
+
+    <script src="script.js"></script>
+    
+</body>
+</html>

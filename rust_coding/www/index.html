@@ -7,7 +7,18 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
+    <!-- テーマ -->
+    <div id="theme-select" class="container">
+        <h2>テーマを選んでください</h2>
+        <button onclick="selectTheme('rust')">Rustテーマ</button>
+        <button onclick="selectTheme('js')">JavaScriptテーマ</button>
+        <div id="confirm-area" style="display: none; margin-top: 1rem;">
+        <p>このテーマでよろしいですか？</p>
+        <button onclick="confirmTheme()">OK</button>
+        </div>
+    </div>
+    
+    <div class="container" id="quiz-container" style="display: none;">
         <h1>このコードはRust？JavaScript？</h1>
         <pre id="code-block">println!("Hello,world!");</pre>
 
@@ -21,8 +32,18 @@
             <span id="question-couunt">1問目</span>
             <span id="score">正解数: 0</span>
         </div>
-        <button id="next-button" onclick="loadNextQuestion()" style="display: none">次の問題へ</button>n
+        <button id="next-button" onclick="loadNextQuestion()" style="display: none">次の問題へ</button>
     </div>
+
+    <script>
+        //テーマ切り替え
+        document.querySelectorAll('input[name="theme"]').forEach((input) => {
+            input.addEventListener("change", (e) => {
+                const theme = e.target.value;
+                document.body.className = theme + "-theme";
+            });
+        });
+    </script>
 
     <script src="script.js"></script>
     

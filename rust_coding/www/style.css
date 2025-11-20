@@ -1,22 +1,72 @@
 body {
     font-family: sans-serif;
-    background-color: #0f172a;
-    color: white;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+body.rust-theme {
+    background-color: #f8f1e9;
+    color: #5a2b0a;
+}
+
+body.rust-theme pre {
+    background-color: #ffe2dc;
+    color: #5a2b0a;
+}
+
+body.rust-theme button {
+    background-color: #fce1d5;
+    color: #5a2b0a;
+}
+
+
+body.rust-theme button:hover {
+    background-color: #ffd2bf;
+}
+
+body.js-theme {
+    background-color: #eef6f7;
+    color: #1c3c5a;
 }
 
 .container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 90%;
     text-align: center;
 }
 
+.theme-toggle {
+    text-align: center;
+    margin: 1rem;
+}
+
+.theme-toggle button {
+    margin: 0 0.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: 9px;
+    border: 2px solid #aaa;
+    background-color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
 pre {
-    background-color: #1e293b;
+    background-color: #FEDDDDFF;
+    color: #ffffff;
     padding: 1rem;
     border-radius: 8px;
     font-size: 1.2rem;
+    margin-top: 1rem;
 }
 
 .options button {
@@ -35,4 +85,40 @@ pre {
     margin-top: 15px;
     padding: 8px 16px;
     font-size: 1rem;
+}
+
+
+.theme-toggle input[type="radio"] {
+    display: none; /* ラジオボタン非表示で見た目すっきり */
+}
+
+/* ボタン共通設定 */
+button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* 正解/不正解テキスト */
+#result {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+}
+
+body.js-theme pre {
+    background-color: #d6f0f5;
+    color: #1c3c5a;
+}
+
+body.js-theme button {
+    background-color: #dff7f3;
+    color: #1c3c5a;
+}
+
+body.js-theme button:hover {
+    background-color: #c0ede6;
 }

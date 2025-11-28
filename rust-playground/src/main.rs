@@ -3,6 +3,9 @@ mod basics {
     pub mod variables;
     pub mod ownership;
     pub mod borrow;
+    pub mod slice;
+    pub mod vecs;
+    pub mod hashmaps;
 }
 
 fn main() {
@@ -10,4 +13,7 @@ fn main() {
     basics::variables::run();
     basics::ownership::run();
     basics::borrow::run();
+    basics::slice::run();
+    basics::vecs::run();
+    basics::hashmaps::run();
 }

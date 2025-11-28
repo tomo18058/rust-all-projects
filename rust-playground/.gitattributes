@@ -1,0 +1,6 @@
+* linguist-detectable=true
+*.rs linguist-language=Rust
+*.html linguist-language=HTML
+*.css linguist-language=CSS
+*.js linguist-language=JavaScript
+Makefile linguist-language=Ignore
